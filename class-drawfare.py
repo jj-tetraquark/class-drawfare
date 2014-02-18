@@ -13,8 +13,13 @@ rootdir = sys.argv[1]
 if not os.path.isdir(rootdir):
     print("Error: Not a valid directory")
 
+def get_header_files(root_directory):
+    header_file_list = list()
+    for root, subdirs, files in os.walk(root_directory):
+        for filename in files:
+            if re.match(r'[A-Za-z_0-9\-]+\.h', filename):
+                header_file_list.append(os.path.join(root,filename))
+    return header_file_list
+
 # get all header files
-for root, subdirs, files in os.walk(rootdir):
-    for filename in files:
-        if re.match(r'[A-Za-z_0-9\-]+\.h', filename):
-            print os.path.join(root,filename)
+header_files = get_header_files(rootdir)
