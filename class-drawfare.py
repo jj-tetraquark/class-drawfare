@@ -21,17 +21,30 @@ def get_header_files(root_directory):
                 header_file_list.append(os.path.join(root,filename))
     return header_file_list
 
-def find_class_declarations_in_file(filename):
+
+class Cpp_class:
+    def __init__(self, name, filename, inherits):
+        self.name = name
+        self.filename = filename
+        self.inherits = inherits
+
+def find_class_declarations_in_file(filename, classList):
     file_contents = open(filename, 'r').read()
-    match = re.search(
-            r'^(?!enum).*class\b\s(\b[A-Za-z_][A-Za-z_0-9]*\b)\s*[$]?(:[$]?\s*[public|protected|private]\s*[^{]*\s*)?{',
+    matches = re.findall(
+        r'^(?!enum).*class\b\s(\b[A-Za-z_][A-Za-z_0-9]*\b)\s*[$]?(:[$]?\s*[public|protected|private]\s*[^{]*\s*)?{',
         file_contents, re.M)
-    if match:
-        print match.groups()
+    for match in matches:
+        classList.append(Cpp_class(match[0], filename, match[1]))
+         
 
 
 # get all header files
 header_files = get_header_files(rootdir)
 
+classList = list()
 for filename in header_files:
-    find_class_declarations_in_file(filename)
+    find_class_declarations_in_file(filename, classList)
+
+
+for cppClass in classList:
+    print cppClass.filename + " : " + cppClass.name
