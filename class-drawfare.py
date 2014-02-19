@@ -1,17 +1,18 @@
 #! /usr/bin/env python
 
 import sys, os, re
+from termcolor import cprint, colored
 
 if len(sys.argv) is not 2:
-    print("\tIncorrect usage\n"
-          "\tYou must specify a root of a C++ project like so:\n"
-          "\t\tclass-drawfare path/to/project/")
+    cprint("Incorrect usage", color='red')
+    print("You must specify a root of a C++ project like so:\n"
+          "\tclass-drawfare path/to/project/")
     exit()
 
 rootdir = sys.argv[1]
 
 if not os.path.isdir(rootdir):
-    print("Error: Not a valid directory")
+    cprint("Error: Not a valid directory", color='red', file=sys.stderr)
 
 def get_header_files(root_directory):
     header_file_list = list()
@@ -47,4 +48,6 @@ for filename in header_files:
 
 
 for cppClass in classList:
-    print cppClass.filename + " : " + cppClass.name
+    filename = colored(cppClass.filename, 'green')
+    print filename + " : ",
+    cprint(cppClass.name, attrs=['bold'])
