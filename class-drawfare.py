@@ -26,11 +26,12 @@ def get_header_files(root_directory):
 
 
 class CPP_Class:
-    def __init__(self, name, inherits, filename, position):
+    def __init__(self, name, inherits, contents, filename, position):
         self.name = name
         self.inherits = inherits
         self.filename = filename
         self.position = position
+        self.contents = contents
 
 
 def find_class_declarations_in_file(filename, classList):
@@ -45,6 +46,7 @@ def find_class_declarations_in_file(filename, classList):
             CPP_Class(
                 match.group(1),
                 build_inheritance_tuple_list(match.group(2)),
+                get_class_contents(file_contents, match.end()-1),
                 filename,
                 match.start())
             )
@@ -64,6 +66,23 @@ def build_inheritance_tuple_list(inheritance_declaration):
         tuple_list.append(declaration_tuple)
     return tuple_list
 
+
+def get_class_contents(file_contents, opening_brace_position):
+    return get_contents_between_braces(file_contents, opening_brace_position)
+
+
+def get_contents_between_braces(file_contents, opening_brace_position):
+    brace_counter = 0
+    for pos, character in enumerate(file_contents[opening_brace_position:]):
+        if character is '{':
+            brace_counter += 1
+        elif character is '}':
+            brace_counter -= 1
+
+        if brace_counter is 0:
+            closing_brace_position = opening_brace_position + pos + 1
+            return file_contents[opening_brace_position:closing_brace_position]
+
 # get all header files
 header_files = get_header_files(rootdir)
 
@@ -76,3 +95,4 @@ for cppClass in classList:
     filename = colored(cppClass.filename, 'green')
     print filename + " : %d " % cppClass.position,
     cprint("%s [%s]" % (cppClass.name, cppClass.inherits), attrs=['bold'])
+    print cppClass.contents
