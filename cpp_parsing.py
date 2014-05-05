@@ -49,7 +49,8 @@ def get_class_contents(file_contents, opening_brace_position):
     contents = get_contents_between_braces(
         file_contents, opening_brace_position)
 
-    return strip_comments(contents)
+    contents = strip_comments(contents)
+    return find_methods(contents)
 
 
 def get_contents_between_braces(file_contents, opening_brace_position):
@@ -67,4 +68,20 @@ def get_contents_between_braces(file_contents, opening_brace_position):
 
 def strip_comments(code):
     removed_single = re.sub('//.*', '', code)  # single line comments
-    return re.sub('/\*(.*?)\*/', '', removed_single, 0, re.DOTALL)
+    return re.sub('/\*(.*?)\*/', '', removed_single, 0, re.DOTALL)  # multiline
+
+
+def find_methods(code):
+    method_regex = re.compile(
+        r"(unsigned |const |static )*?"  # keywords
+        r"([A-Z_a-z0-9]*::)*?"           # scoping and namespaces
+        r"[A-Z_a-z0-9~]*\s+"             # type
+        r"[A-Za-z0-9]*\s*?\([^)]*?\)",   # method name
+        re.M)
+    matches = method_regex.finditer(code)
+    methods = list()
+    for match in matches:
+        method = re.sub('\n', '', match.group()).strip()
+        methods.append(method)
+
+    return methods
