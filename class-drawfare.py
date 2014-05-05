@@ -3,6 +3,7 @@ import sys
 import os
 from termcolor import cprint, colored
 from cpp_parsing import get_header_files, find_class_declarations_in_file
+from pprint import pprint
 
 if len(sys.argv) is not 2:
     cprint("Incorrect usage", color='red')
@@ -28,4 +29,4 @@ if __name__ == "__main__":
         filename = colored(cppClass.filename, 'green')
         print filename + " : %d " % cppClass.position,
         cprint("%s [%s]" % (cppClass.name, cppClass.inherits), attrs=['bold'])
-        print cppClass.contents
+        pprint(cppClass.contents)
