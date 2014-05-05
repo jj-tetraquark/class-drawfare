@@ -46,7 +46,10 @@ def build_inheritance_tuple_list(inheritance_declaration):
 
 
 def get_class_contents(file_contents, opening_brace_position):
-    return get_contents_between_braces(file_contents, opening_brace_position)
+    contents = get_contents_between_braces(
+        file_contents, opening_brace_position)
+
+    return strip_comments(contents)
 
 
 def get_contents_between_braces(file_contents, opening_brace_position):
@@ -60,3 +63,8 @@ def get_contents_between_braces(file_contents, opening_brace_position):
         if brace_counter is 0:
             closing_brace_position = opening_brace_position + pos + 1
             return file_contents[opening_brace_position:closing_brace_position]
+
+
+def strip_comments(code):
+    removed_single = re.sub('//.*', '', code)  # single line comments
+    return re.sub('/\*(.*?)\*/', '', removed_single, 0, re.DOTALL)
