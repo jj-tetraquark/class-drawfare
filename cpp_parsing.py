@@ -95,15 +95,16 @@ def strip_comments(code):
 
 def get_methods(code):
     method_regex = re.compile(
-        r"(friend |unsigned |const |static )*?"  # keywords
-        r"([A-Z_a-z0-9]*::)*?"           # scoping and namespaces
-        r"[A-Z_a-z0-9~]*\s+"             # type
+        r"(friend |unsigned |const |static |long )*?"  # keywords
+        r"([A-Z_a-z0-9<>]*::)*?"           # scoping and namespaces
+        r"[A-Z_a-z0-9~<>]+\s+"             # type
         r"[A-Z_a-z0-9]*\s*?\([^)]*?\)",   # method name
         re.M)
     matches = method_regex.finditer(code)
     methods = list()
     for match in matches:
         method = re.sub('\n', '', match.group()).strip()
+        method = re.sub('\s+', ' ', method)
         methods.append((match.start(), method))
 
     return methods
